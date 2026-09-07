@@ -31,8 +31,9 @@
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(22, 163, 74, 0.16), transparent 35%),
-        linear-gradient(145deg, #06120b, #0a1c11 55%, #06120b);
+        linear-gradient(rgba(4,45,18,.72),rgba(3,31,13,.82)),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 70px,rgba(0,0,0,.025) 70px,rgba(0,0,0,.025) 140px),
+        linear-gradient(145deg,#0a7a32,#075a27 52%,#063e1d);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       padding: 24px;
@@ -53,6 +54,8 @@
     }
 
     .app {
+      position: relative;
+      z-index: 1;
       width: min(100%, 760px);
       margin: 0 auto;
     }
@@ -98,6 +101,8 @@
 
     .start-card {
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
     .start-card h2 {
@@ -477,6 +482,36 @@
         height: 200px;
       }
     }
+
+    .music-button {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 9999;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--text);
+      background: var(--bg-card-2);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: 0.2s ease;
+    }
+
+    .music-button:hover {
+      transform: translateY(-2px);
+      background: var(--green);
+    }
+
+    @media (max-width: 560px) {
+      .music-button {
+        right: 12px;
+        bottom: 12px;
+        padding: 10px 13px;
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 
@@ -489,11 +524,8 @@
     </header>
 
     <main id="startScreen" class="card start-card">
-      <h2>Como jogar</h2>
-      <p>
-        Descubra qual clube está escondido. Você terá três tentativas,
-        poderá pedir dicas e ganhará mais pontos se acertar rapidamente.
-      </p>
+      <h2>⚽ Como funciona o jogo?</h2>
+      <p>Descubra o clube pelo escudo. Você terá <strong>3 tentativas</strong> em cada rodada.</p>
 
       <div class="rules">
         <div class="rule">
@@ -585,6 +617,70 @@
     </div>
   </div>
 
+  <button id="musicButton" class="music-button" type="button">🔇 Ativar música</button>
+
+  <script>
+    let audioContext = null;
+    let musicEnabled = false;
+    let musicTimer = null;
+
+    function audioStart() {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      if (!audioContext) audioContext = new Ctx();
+      if (audioContext.state === "suspended") audioContext.resume();
+      return audioContext;
+    }
+
+    function tone(freq, duration, delay = 0, volume = 0.035) {
+      const ctx = audioStart();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      osc.connect(gain); gain.connect(ctx.destination);
+      const t = ctx.currentTime + delay;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(volume, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+      osc.start(t); osc.stop(t + duration + 0.05);
+    }
+
+    function playMusicLoop() {
+      if (!musicEnabled) return;
+      [196,246.94,293.66,246.94,220,277.18,329.63,277.18].forEach((n,i)=>tone(n,.48,i*.42,.014));
+      musicTimer = setTimeout(playMusicLoop, 3400);
+    }
+
+    function playWrongSound() {
+      if (!musicEnabled) return;
+      tone(220.00, 0.16, 0, 0.14);
+      tone(164.81, 0.22, 0.16, 0.14);
+    }
+
+    function playCorrectSound() {
+      if (!musicEnabled) return;
+      tone(523.25, 0.12, 0, 0.18);
+      tone(659.25, 0.12, 0.13, 0.18);
+      tone(783.99, 0.18, 0.26, 0.18);
+    }
+
+    document.getElementById("musicButton").addEventListener("click", () => {
+      audioStart();
+      musicEnabled = !musicEnabled;
+      const btn = document.getElementById("musicButton");
+      if (musicEnabled) {
+        btn.textContent = "🔊 Música ligada";
+        clearTimeout(musicTimer);
+        playMusicLoop();
+      } else {
+        btn.textContent = "🔇 Música";
+        clearTimeout(musicTimer);
+      }
+    });
+  </script>
+
   <script>
     "use strict";
 
@@ -672,7 +768,7 @@
         country: "Brasil",
         city: "Rio de Janeiro",
         league: "Campeonato Brasileiro",
-        aliases: ["botafogo", "fogao", "glorioso", "botafogo fr"],
+        aliases: ["botafogo", "fogao", "glorioso", "botafogo fr", "fogo"],
         search: ["Botafogo", "Botafogo FR"]
       },
       {
@@ -704,7 +800,7 @@
         country: "Brasil",
         city: "Belo Horizonte",
         league: "Campeonato Brasileiro",
-        aliases: ["atletico mineiro", "galo", "atletico mg", "cam"],
+        aliases: ["atletico mineiro", "galo", "atletico mg", "cam", "atletico"],
         search: ["Atlético Mineiro", "Atletico MG"]
       },
       {
@@ -714,14 +810,6 @@
         league: "Campeonato Brasileiro",
         aliases: ["bahia", "esquadrao de aço", "ec bahia", "esporte clube bahia"],
         search: ["Bahia", "Esporte Clube Bahia"]
-      },
-      {
-        name: "Sport",
-        country: "Brasil",
-        city: "Recife",
-        league: "Campeonato Brasileiro",
-        aliases: ["sport", "sport recife", "leao", "sport club do recife"],
-        search: ["Sport", "Sport Recife"]
       },
       {
         name: "Fortaleza",
@@ -792,7 +880,7 @@
         country: "Espanha",
         city: "Madrid",
         league: "La Liga",
-        aliases: ["real madrid", "real madrid cf"],
+        aliases: ["real madrid", "real madrid cf", "real", "madrid"],
         search: ["Real Madrid", "Real Madrid CF"]
       },
       {
@@ -800,7 +888,7 @@
         country: "Espanha",
         city: "Madrid",
         league: "La Liga",
-        aliases: ["atletico de madrid", "atletico madrid", "atleti"],
+        aliases: ["atletico de madrid", "atletico madrid", "atleti", "madrid"],
         search: ["Atlético de Madrid", "Atletico Madrid"]
       },
       {
@@ -924,14 +1012,6 @@
         search: ["RB Leipzig"]
       },
       {
-        name: "PSG",
-        country: "França",
-        city: "Paris",
-        league: "Ligue 1",
-        aliases: ["psg", "paris saint germain", "paris sg"],
-        search: ["Paris Saint-Germain", "PSG"]
-      },
-      {
         name: "Olympique de Marseille",
         country: "França",
         city: "Marselha",
@@ -978,14 +1058,6 @@
         league: "Primeira Liga",
         aliases: ["porto", "fc porto", "dragoes"],
         search: ["Porto", "FC Porto"]
-      },
-      {
-        name: "Sporting",
-        country: "Portugal",
-        city: "Lisboa",
-        league: "Primeira Liga",
-        aliases: ["sporting", "sporting cp", "sporting lisboa", "leoes"],
-        search: ["Sporting CP", "Sporting Lisbon"]
       },
       {
         name: "River Plate",
@@ -1067,6 +1139,407 @@
         aliases: ["urawa red diamonds", "urawa"],
         search: ["Urawa Red Diamonds"]
       }
+,
+      {
+        name: "Sport",
+        country: "Brasil",
+        city: "Recife",
+        league: "Campeonato Brasileiro",
+        aliases: ['sport', 'sport recife', 'leao', 'sport club do recife'],
+        search: ['Sport', 'Sport Club do Recife']
+      },
+      {
+        name: "Goiás",
+        country: "Brasil",
+        city: "Goiânia",
+        league: "Campeonato Brasileiro",
+        aliases: ['goias', 'goias ec', 'esmeraldino'],
+        search: ['Goiás', 'Goiás EC']
+      },
+      {
+        name: "Atlético Goianiense",
+        country: "Brasil",
+        city: "Goiânia",
+        league: "Campeonato Brasileiro",
+        aliases: ['atletico goianiense', 'atletico go', 'dragao'],
+        search: ['Atlético Goianiense', 'Atlético-GO']
+      },
+      {
+        name: "América Mineiro",
+        country: "Brasil",
+        city: "Belo Horizonte",
+        league: "Campeonato Brasileiro",
+        aliases: ['america mineiro', 'america mg', 'coelho'],
+        search: ['América Mineiro', 'América-MG']
+      },
+      {
+        name: "Criciúma",
+        country: "Brasil",
+        city: "Criciúma",
+        league: "Campeonato Brasileiro",
+        aliases: ['criciuma', 'criciuma ec'],
+        search: ['Criciúma', 'Criciúma EC']
+      },
+      {
+        name: "Chapecoense",
+        country: "Brasil",
+        city: "Chapecó",
+        league: "Campeonato Brasileiro",
+        aliases: ['chapecoense', 'chape'],
+        search: ['Chapecoense']
+      },
+      {
+        name: "Náutico",
+        country: "Brasil",
+        city: "Recife",
+        league: "Campeonato Brasileiro",
+        aliases: ['nautico', 'nautico capibaribe'],
+        search: ['Náutico', 'Náutico Capibaribe']
+      },
+      {
+        name: "Santa Cruz",
+        country: "Brasil",
+        city: "Recife",
+        league: "Campeonato Brasileiro",
+        aliases: ['santa cruz', 'santa cruz pe'],
+        search: ['Santa Cruz', 'Santa Cruz FC']
+      },
+      {
+        name: "Remo",
+        country: "Brasil",
+        city: "Belém",
+        league: "Campeonato Brasileiro",
+        aliases: ['remo', 'clube do remo'],
+        search: ['Remo', 'Clube do Remo']
+      },
+      {
+        name: "Paysandu",
+        country: "Brasil",
+        city: "Belém",
+        league: "Campeonato Brasileiro",
+        aliases: ['paysandu', 'paysandu sc'],
+        search: ['Paysandu', 'Paysandu SC']
+      },
+      {
+        name: "Atlético Nacional",
+        country: "Colômbia",
+        city: "Medellín",
+        league: "Liga Colombiana",
+        aliases: ['atletico nacional', 'atletico nacional medellin'],
+        search: ['Atlético Nacional']
+      },
+      {
+        name: "Millonarios",
+        country: "Colômbia",
+        city: "Bogotá",
+        league: "Liga Colombiana",
+        aliases: ['millonarios', 'millonarios fc'],
+        search: ['Millonarios', 'Millonarios FC']
+      },
+      {
+        name: "Independiente del Valle",
+        country: "Equador",
+        city: "Sangolquí",
+        league: "Liga Equatoriana",
+        aliases: ['independiente del valle', 'independiente del valle ec'],
+        search: ['Independiente del Valle']
+      },
+      {
+        name: "LDU Quito",
+        country: "Equador",
+        city: "Quito",
+        league: "Liga Equatoriana",
+        aliases: ['ldu quito', 'liga de quito'],
+        search: ['LDU Quito', 'Liga Deportiva Universitaria']
+      },
+      {
+        name: "Colo-Colo",
+        country: "Chile",
+        city: "Santiago",
+        league: "Primera División",
+        aliases: ['colo colo', 'colocolo'],
+        search: ['Colo-Colo']
+      },
+      {
+        name: "Universidad de Chile",
+        country: "Chile",
+        city: "Santiago",
+        league: "Primera División",
+        aliases: ['universidad de chile', 'la u'],
+        search: ['Universidad de Chile']
+      },
+      {
+        name: "Club América",
+        country: "México",
+        city: "Cidade do México",
+        league: "Liga MX",
+        aliases: ['club america', 'america mexico', 'america do mexico'],
+        search: ['Club América']
+      },
+      {
+        name: "Chivas",
+        country: "México",
+        city: "Guadalajara",
+        league: "Liga MX",
+        aliases: ['chivas', 'guadalajara', 'club deportivo guadalajara'],
+        search: ['Chivas', 'Guadalajara']
+      },
+      {
+        name: "Monterrey",
+        country: "México",
+        city: "Monterrey",
+        league: "Liga MX",
+        aliases: ['monterrey', 'rayados', 'cf monterrey'],
+        search: ['Monterrey', 'CF Monterrey']
+      },
+      {
+        name: "Tigres UANL",
+        country: "México",
+        city: "Monterrey",
+        league: "Liga MX",
+        aliases: ['tigres', 'tigres uanl'],
+        search: ['Tigres UANL']
+      },
+      {
+        name: "LA Galaxy",
+        country: "Estados Unidos",
+        city: "Los Angeles",
+        league: "MLS",
+        aliases: ['la galaxy', 'los angeles galaxy'],
+        search: ['LA Galaxy']
+      },
+      {
+        name: "Inter Miami",
+        country: "Estados Unidos",
+        city: "Fort Lauderdale",
+        league: "MLS",
+        aliases: ['inter miami', 'inter miami cf', 'miami'],
+        search: ['Inter Miami']
+      },
+      {
+        name: "Alianza Lima",
+        country: "Peru",
+        city: "Lima",
+        league: "Liga Peruana",
+        aliases: ['alianza lima', 'alianza'],
+        search: ['Alianza Lima']
+      },
+      {
+        name: "Universitario",
+        country: "Peru",
+        city: "Lima",
+        league: "Liga Peruana",
+        aliases: ['universitario', 'universitario de deportes'],
+        search: ['Universitario']
+      },
+      {
+        name: "Bolívar",
+        country: "Bolívia",
+        city: "La Paz",
+        league: "Liga Boliviana",
+        aliases: ['bolivar', 'club bolivar'],
+        search: ['Bolívar', 'Club Bolívar']
+      },
+      {
+        name: "The Strongest",
+        country: "Bolívia",
+        city: "La Paz",
+        league: "Liga Boliviana",
+        aliases: ['the strongest'],
+        search: ['The Strongest']
+      },
+      {
+        name: "Libertad",
+        country: "Paraguai",
+        city: "Assunção",
+        league: "Liga Paraguaia",
+        aliases: ['libertad', 'club libertad'],
+        search: ['Libertad', 'Club Libertad']
+      },
+      {
+        name: "Cerro Porteño",
+        country: "Paraguai",
+        city: "Assunção",
+        league: "Liga Paraguaia",
+        aliases: ['cerro porteno', 'cerro'],
+        search: ['Cerro Porteño']
+      },
+      {
+        name: "Estudiantes",
+        country: "Argentina",
+        city: "La Plata",
+        league: "Liga Argentina",
+        aliases: ['estudiantes', 'estudiantes de la plata'],
+        search: ['Estudiantes', 'Estudiantes de La Plata']
+      },
+      {
+        name: "San Lorenzo",
+        country: "Argentina",
+        city: "Buenos Aires",
+        league: "Liga Argentina",
+        aliases: ['san lorenzo', 'ciclon'],
+        search: ['San Lorenzo']
+      },
+      {
+        name: "Independiente",
+        country: "Argentina",
+        city: "Avellaneda",
+        league: "Liga Argentina",
+        aliases: ['independiente', 'club atletico independiente'],
+        search: ['Independiente']
+      },
+      {
+        name: "Vélez Sarsfield",
+        country: "Argentina",
+        city: "Buenos Aires",
+        league: "Liga Argentina",
+        aliases: ['velez', 'velez sarsfield'],
+        search: ['Vélez Sarsfield']
+      },
+      {
+        name: "Feyenoord",
+        country: "Holanda",
+        city: "Roterdã",
+        league: "Eredivisie",
+        aliases: ['feyenoord'],
+        search: ['Feyenoord']
+      },
+      {
+        name: "Celtic",
+        country: "Escócia",
+        city: "Glasgow",
+        league: "Scottish Premiership",
+        aliases: ['celtic', 'celtic glasgow'],
+        search: ['Celtic']
+      },
+      {
+        name: "Rangers",
+        country: "Escócia",
+        city: "Glasgow",
+        league: "Scottish Premiership",
+        aliases: ['rangers', 'rangers fc'],
+        search: ['Rangers']
+      },
+      {
+        name: "Galatasaray",
+        country: "Turquia",
+        city: "Istambul",
+        league: "Süper Lig",
+        aliases: ['galatasaray', 'gala'],
+        search: ['Galatasaray']
+      },
+      {
+        name: "Fenerbahçe",
+        country: "Turquia",
+        city: "Istambul",
+        league: "Süper Lig",
+        aliases: ['fenerbahce', 'fenerbahçe'],
+        search: ['Fenerbahçe']
+      },
+      {
+        name: "Olympiacos",
+        country: "Grécia",
+        city: "Pireu",
+        league: "Super League Greece",
+        aliases: ['olympiacos', 'olympiakos'],
+        search: ['Olympiacos']
+      },
+      {
+        name: "Dinamo Zagreb",
+        country: "Croácia",
+        city: "Zagreb",
+        league: "HNL",
+        aliases: ['dinamo zagreb', 'gnk dinamo zagreb'],
+        search: ['Dinamo Zagreb']
+      },
+      {
+        name: "Club Brugge",
+        country: "Bélgica",
+        city: "Bruges",
+        league: "Belgian Pro League",
+        aliases: ['club brugge'],
+        search: ['Club Brugge']
+      },
+      {
+        name: "Anderlecht",
+        country: "Bélgica",
+        city: "Bruxelas",
+        league: "Belgian Pro League",
+        aliases: ['anderlecht', 'rsc anderlecht'],
+        search: ['Anderlecht']
+      },
+      {
+        name: "Bayer Leverkusen",
+        country: "Alemanha",
+        city: "Leverkusen",
+        league: "Bundesliga",
+        aliases: ['bayer leverkusen', 'leverkusen'],
+        search: ['Bayer Leverkusen']
+      },
+      {
+        name: "Eintracht Frankfurt",
+        country: "Alemanha",
+        city: "Frankfurt",
+        league: "Bundesliga",
+        aliases: ['eintracht frankfurt', 'eintracht'],
+        search: ['Eintracht Frankfurt']
+      },
+      {
+        name: "Lazio",
+        country: "Itália",
+        city: "Roma",
+        league: "Serie A",
+        aliases: ['lazio', 'ss lazio'],
+        search: ['Lazio', 'SS Lazio']
+      },
+      {
+        name: "Atalanta",
+        country: "Itália",
+        city: "Bérgamo",
+        league: "Serie A",
+        aliases: ['atalanta', 'atalanta bc'],
+        search: ['Atalanta']
+      },
+      {
+        name: "Fiorentina",
+        country: "Itália",
+        city: "Florença",
+        league: "Serie A",
+        aliases: ['fiorentina', 'acf fiorentina'],
+        search: ['Fiorentina']
+      },
+      {
+        name: "Monaco",
+        country: "França",
+        city: "Mônaco",
+        league: "Ligue 1",
+        aliases: ['monaco', 'as monaco'],
+        search: ['Monaco', 'AS Monaco']
+      },
+      {
+        name: "Valencia",
+        country: "Espanha",
+        city: "Valência",
+        league: "La Liga",
+        aliases: ['valencia', 'valencia cf'],
+        search: ['Valencia', 'Valencia CF']
+      },
+      {
+        name: "Athletic Bilbao",
+        country: "Espanha",
+        city: "Bilbao",
+        league: "La Liga",
+        aliases: ['athletic bilbao', 'athletic club'],
+        search: ['Athletic Bilbao', 'Athletic Club']
+      },
+      {
+        name: "Villarreal",
+        country: "Espanha",
+        city: "Vila-real",
+        league: "La Liga",
+        aliases: ['villarreal', 'villarreal cf'],
+        search: ['Villarreal', 'Villarreal CF']
+      }
     ];
 
     const difficultyNames = {
@@ -1091,7 +1564,6 @@
       answer: document.getElementById("answer"),
       submitBtn: document.getElementById("submitBtn"),
       hintBtn: document.getElementById("hintBtn"),
-      revealBtn: document.getElementById("revealBtn"),
       feedback: document.getElementById("feedback"),
       dot1: document.getElementById("dot1"),
       dot2: document.getElementById("dot2"),
@@ -1136,29 +1608,73 @@
       return copy;
     }
 
-    const EASY_CLUBS = new Set([
-      "flamengo", "palmeiras", "corinthians", "sao paulo", "santos",
-      "vasco da gama", "botafogo", "gremio", "internacional", "cruzeiro",
-      "atletico mineiro", "bahia", "fluminense", "barcelona", "real madrid",
-      "manchester united", "manchester city", "liverpool", "arsenal",
-      "chelsea", "juventus", "milan", "inter de milao", "bayern de munique",
-      "borussia dortmund", "psg", "benfica", "porto", "river plate",
-      "boca juniors"
-    ]);
+   const EASY_CLUBS = new Set([
+  // Brasil
+  "flamengo", "palmeiras", "corinthians", "sao paulo", "santos",
+  "vasco da gama", "botafogo", "gremio", "internacional", "cruzeiro",
+  "atletico mineiro", "bahia", "fluminense",
 
-    const MEDIUM_CLUBS = new Set([
-      "sport", "fortaleza", "ceara", "athletico paranaense", "coritiba",
-      "red bull bragantino", "vitoria", "atletico de madrid", "sevilla",
-      "tottenham", "roma", "napoli", "rb leipzig", "olympique de marseille",
-      "lyon", "ajax", "psv", "sporting", "racing club", "penarol",
-      "nacional", "america do mexico", "al ahly", "al hilal", "al nassr"
-    ]);
+  // Europa
+  "barcelona", "real madrid", "manchester united", "manchester city",
+  "liverpool", "arsenal", "chelsea", "juventus", "milan",
+  "inter de milao", "bayern de munique", "ajax",
+  "benfica", "porto", "borussia dortmund", "atletico de madrid",
+
+  // Outros muito conhecidos
+  "club america", "inter miami", "river plate", "boca juniors",
+  "al ahly", "al hilal", "al nassr"
+]);
+
+const MEDIUM_CLUBS = new Set([
+  // Brasil
+  "goias", "atletico goianiense", "america mineiro", "chapecoense",
+  "fortaleza", "ceara", "athletico paranaense", "coritiba",
+  "red bull bragantino", "vitoria", "criciuma",
+
+  // Inglaterra, Espanha, Itália e Alemanha
+  "tottenham", "napoli", "roma", "lazio", "atalanta",
+  "fiorentina", "bologna", "monaco", "valencia",
+  "athletic bilbao", "villarreal", "sevilla", "lyon",
+  "bayer leverkusen", "eintracht frankfurt", "rb leipzig",
+
+  // Portugal, Holanda, Bélgica e Turquia
+  "psv", "sporting", "feyenoord", "galatasaray", "fenerbahce",
+  "besiktas", "olympiacos", "club brugge", "anderlecht",
+  "celtic", "red bull salzburg",
+
+  // América do Sul e Central
+  "atletico nacional", "ldu quito", "colo-colo", "chivas",
+  "monterrey", "tigres uanl", "estudiantes", "san lorenzo",
+  "independiente", "racing club", "penarol", "nacional",
+  "america do mexico", "velez sarsfield", "independiente del valle",
+  "millonarios", "universidad de chile", "libertad", "cerro porteno",
+  "bolivar", "alianza lima", "universitario",
+
+  // Ásia, África e outros
+  "al sadd", "al ain", "al ittihad", "al ettifaq",
+  "kashima antlers", "yokohama f marinos", "kawasaki frontale",
+  "jeonbuk hyundai motors", "ulsan hd", "urawa red diamonds",
+  "shakhtar donetsk", "dynamo kyiv", "dinamo zagreb",
+  "panathinaikos", "aek atenas", "zamalek", "wydad casablanca",
+  "raja casablanca", "esperance de tunis", "mamelodi sundowns",
+  "orlando pirates", "la galaxy", "crvena zvezda"
+]);
+
+const HARD_CLUBS = new Set([
+  // Brasil
+  "nautico", "santa cruz", "remo", "paysandu",
+
+  // América do Sul
+  "the strongest", "tp maz embe", "persepolis",
+  "esteghlal", "guangzhou", "shamrock rovers", "partizan"
+]);
 
     function getDifficulty(index) {
       const clubName = normalize(sequence[index]?.name);
 
       if (EASY_CLUBS.has(clubName)) return "easy";
       if (MEDIUM_CLUBS.has(clubName)) return "medium";
+      if (HARD_CLUBS.has(clubName)) return "hard";
       return "hard";
     }
 
@@ -1299,7 +1815,6 @@
       elements.answer.disabled = disabled;
       elements.submitBtn.disabled = disabled;
       elements.hintBtn.disabled = disabled || hintsUsed >= 2;
-      elements.revealBtn.disabled = disabled;
     }
 
     async function loadRound() {
@@ -1379,6 +1894,7 @@
       const correct = validAnswers.includes(typed);
 
       if (correct) {
+        playCorrectSound();
         const basePoints = [100, 70, 40][attemptsUsed] || 20;
         const penalty = hintsUsed * 15;
         const earned = Math.max(10, basePoints - penalty);
@@ -1389,11 +1905,13 @@
         elements.shield.classList.add("revealed");
         setFeedback(`Acertou! Você ganhou ${earned} pontos.`, "success");
 
-        finishRound(true);
-        return;
+      finishRound(true);
+elements.answer.focus();
+return;
       }
 
       attemptsUsed++;
+      playWrongSound();
       updateAttempts();
 
       if (attemptsUsed >= 3) {
@@ -1443,6 +1961,7 @@
       setFeedback(`O clube era ${currentClub.name}.`, "error");
 
       finishRound(false);
+      elements.answer.focus();
     }
 
     function showDefeatScreen() {
@@ -1546,18 +2065,18 @@
       elements.startScreen.hidden = false;
     }
 
-    elements.startBtn.addEventListener("click", startGame);
-    elements.restartBtn.addEventListener("click", restartGame);
-    elements.homeBtn.addEventListener("click", goHome);
-    elements.submitBtn.addEventListener("click", checkAnswer);
-    elements.hintBtn.addEventListener("click", giveHint);
-    elements.revealBtn.addEventListener("click", revealClub);
+   elements.startBtn.addEventListener("click", startGame);
+elements.restartBtn.addEventListener("click", restartGame);
+elements.homeBtn.addEventListener("click", goHome);
+elements.submitBtn.addEventListener("click", checkAnswer);
+elements.hintBtn.addEventListener("click", giveHint);
 
-    elements.answer.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        checkAnswer();
-      }
-    });
+elements.answer.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    checkAnswer();
+  }
+});
 
     // Estado inicial seguro.
     elements.gameScreen.hidden = true;
