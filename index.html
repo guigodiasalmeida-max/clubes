@@ -1,0 +1,1568 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brasão Pro</title>
+
+  <style>
+    :root {
+      --bg: #06120b;
+      --bg-card: #0d2116;
+      --bg-card-2: #102b1b;
+      --green: #16a34a;
+      --green-light: #4ade80;
+      --gold: #d8b45f;
+      --gold-light: #f4d98b;
+      --text: #f5f7f5;
+      --muted: #a8b8ad;
+      --danger: #ef4444;
+      --border: rgba(216, 180, 95, 0.24);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(22, 163, 74, 0.16), transparent 35%),
+        linear-gradient(145deg, #06120b, #0a1c11 55%, #06120b);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 24px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      margin: 0 auto;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(216, 180, 95, 0.08);
+      color: var(--gold);
+      font-size: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand h1 {
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      letter-spacing: -1px;
+      color: var(--gold-light);
+    }
+
+    .brand p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(16, 43, 27, 0.96), rgba(8, 27, 16, 0.96));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(20px, 5vw, 36px);
+      box-shadow: var(--shadow);
+    }
+
+    .start-card {
+      text-align: center;
+    }
+
+    .start-card h2 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      margin-bottom: 14px;
+    }
+
+    .start-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .rules {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+
+    .rule {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+    }
+
+    .rule strong {
+      color: var(--text);
+    }
+
+    .rule-icon {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(216, 180, 95, 0.12);
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-weight: 800;
+      transition: 0.2s ease;
+    }
+
+    .primary-btn {
+      width: 100%;
+      color: #06120b;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .secondary-btn {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .secondary-btn:hover {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .danger-btn {
+      color: white;
+      background: var(--danger);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .round-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .round-label strong {
+      color: var(--text);
+    }
+
+    .score-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold-light);
+      font-weight: 800;
+      background: rgba(216, 180, 95, 0.1);
+      border: 1px solid var(--border);
+      padding: 9px 13px;
+      border-radius: 12px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      border-radius: inherit;
+      transition: width 0.35s ease;
+    }
+
+    .difficulty {
+      width: fit-content;
+      margin: 0 auto 14px;
+      padding: 7px 12px;
+      border-radius: 99px;
+      color: var(--gold-light);
+      background: rgba(216, 180, 95, 0.1);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .shield-box {
+      position: relative;
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle, rgba(216, 180, 95, 0.08), transparent 65%),
+        rgba(0, 0, 0, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 20px;
+    }
+
+    #shield {
+      display: block;
+      visibility: visible;
+      width: min(230px, 72%);
+      height: 230px;
+      object-fit: contain;
+      filter: blur(12px);
+      opacity: 0.9;
+      transform: scale(1.04);
+      transition: filter 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    #shield.revealed {
+      filter: blur(0);
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .shield-loading {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 90%;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .club-name {
+      text-align: center;
+      min-height: 32px;
+      font-size: clamp(1.25rem, 5vw, 1.7rem);
+      margin-bottom: 18px;
+      color: var(--gold-light);
+    }
+
+    .hint-box {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 13px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .answer-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .answer-area input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 14px;
+      outline: none;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .answer-area input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(216, 180, 95, 0.12);
+    }
+
+    .submit-btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 0 18px;
+      color: #06120b;
+      background: var(--gold);
+      font-weight: 900;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-row button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .attempts {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .attempt-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .attempt-dot.used {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .attempt-dot.available {
+      background: var(--green-light);
+      border-color: var(--green-light);
+    }
+
+    .feedback {
+      min-height: 24px;
+      text-align: center;
+      margin-top: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .feedback.success {
+      color: var(--green-light);
+    }
+
+    .feedback.error {
+      color: #fca5a5;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .result-card {
+      width: min(100%, 480px);
+      text-align: center;
+      background: linear-gradient(145deg, #102b1b, #07170d);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .result-icon {
+      font-size: 50px;
+      margin-bottom: 12px;
+    }
+
+    .result-card h2 {
+      color: var(--gold-light);
+      margin-bottom: 12px;
+    }
+
+    .result-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .final-score {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: var(--gold-light);
+      margin-bottom: 24px;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .result-actions button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 14px;
+      }
+
+      .card {
+        border-radius: 22px;
+        padding: 18px;
+      }
+
+      .answer-area {
+        flex-direction: column;
+      }
+
+      .submit-btn {
+        min-height: 48px;
+      }
+
+      .shield-box {
+        min-height: 245px;
+      }
+
+      #shield {
+        width: 200px;
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="brand">
+      <div class="brand-icon">⚽</div>
+      <h1>Brasão Pro</h1>
+      <p>Você reconhece os maiores escudos do futebol?</p>
+    </header>
+
+    <main id="startScreen" class="card start-card">
+      <h2>Como jogar</h2>
+      <p>
+        Descubra qual clube está escondido. Você terá três tentativas,
+        poderá pedir dicas e ganhará mais pontos se acertar rapidamente.
+      </p>
+
+      <div class="rules">
+        <div class="rule">
+          <span class="rule-icon">🎯</span>
+          <span><strong>3 tentativas</strong><br />Você pode errar até duas vezes.</span>
+        </div>
+
+        <div class="rule">
+          <span class="rule-icon">💡</span>
+          <span><strong>Dicas</strong><br />Use dicas, mas elas reduzem sua pontuação.</span>
+        </div>
+
+        <div class="rule">
+          <span class="rule-icon">🏆</span>
+          <span><strong>Quanto mais rápido, melhor</strong><br />Acertos na primeira tentativa valem mais.</span>
+        </div>
+      </div>
+
+      <button id="startBtn" class="primary-btn">Iniciar desafio</button>
+    </main>
+
+    <main id="gameScreen" class="card" hidden>
+      <div class="game-header">
+        <div class="round-label">
+          Rodada <strong id="roundNumber">1</strong> de
+          <strong id="totalRounds">1</strong>
+        </div>
+
+        <div class="score-box">
+          🏆 <span id="score">0</span> pontos
+        </div>
+      </div>
+
+      <div class="progress">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="difficulty" class="difficulty">Fácil</div>
+
+      <div class="shield-box">
+        <img id="shield" alt="Escudo do clube" />
+        <div id="shieldLoading" class="shield-loading">Carregando escudo...</div>
+      </div>
+
+      <h2 id="clubName" class="club-name">Qual é o clube?</h2>
+
+      <div id="hintBox" class="hint-box">
+        Digite o nome do clube para tentar acertar.
+      </div>
+
+      <div class="answer-area">
+        <input
+          id="answer"
+          type="text"
+          autocomplete="off"
+          placeholder="Digite o nome do clube..."
+          maxlength="60"
+        />
+
+        <button id="submitBtn" class="submit-btn">Responder</button>
+      </div>
+
+      <div class="action-row">
+        <button id="hintBtn" class="secondary-btn">💡 Usar dica</button>
+        <button id="revealBtn" class="secondary-btn">👁 Revelar</button>
+      </div>
+
+      <div class="attempts" aria-label="Tentativas restantes">
+        <span id="dot1" class="attempt-dot available"></span>
+        <span id="dot2" class="attempt-dot available"></span>
+        <span id="dot3" class="attempt-dot available"></span>
+      </div>
+
+      <div id="feedback" class="feedback"></div>
+    </main>
+  </div>
+
+  <div id="resultOverlay" class="overlay" hidden>
+    <div class="result-card">
+      <div id="resultIcon" class="result-icon">🏆</div>
+      <h2 id="resultTitle">Resultado</h2>
+      <p id="resultMessage"></p>
+      <div id="finalScore" class="final-score">0 pontos</div>
+
+      <div class="result-actions">
+        <button id="restartBtn" class="primary-btn">Jogar novamente</button>
+        <button id="homeBtn" class="secondary-btn">Voltar ao início</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const API_URL =
+      "https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=";
+
+    const FALLBACK_SHIELD =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360">
+          <path
+            d="M150 15 L275 55 V170 C275 255 220 315 150 345 C80 315 25 255 25 170 V55 Z"
+            fill="#d8b45f"
+            stroke="#081a10"
+            stroke-width="12"
+          />
+          <circle cx="150" cy="155" r="55" fill="#081a10"/>
+          <path
+            d="M150 105 L165 140 L203 145 L174 170 L183 208 L150 188 L117 208 L126 170 L97 145 L135 140 Z"
+            fill="#d8b45f"
+          />
+          <text
+            x="150"
+            y="275"
+            text-anchor="middle"
+            font-family="Arial"
+            font-size="28"
+            font-weight="bold"
+            fill="#081a10"
+          >BRASÃO</text>
+        </svg>
+      `);
+
+    const clubs = [
+      {
+        name: "Flamengo",
+        country: "Brasil",
+        city: "Rio de Janeiro",
+        league: "Campeonato Brasileiro",
+        aliases: ["flamengo", "mengo", "mengao", "crf", "clube de regatas do flamengo"],
+        search: ["Flamengo", "Clube de Regatas do Flamengo"]
+      },
+      {
+        name: "Palmeiras",
+        country: "Brasil",
+        city: "São Paulo",
+        league: "Campeonato Brasileiro",
+        aliases: ["palmeiras", "verdao", "porco", "sociedade esportiva palmeiras"],
+        search: ["Palmeiras", "Sociedade Esportiva Palmeiras"]
+      },
+      {
+        name: "Corinthians",
+        country: "Brasil",
+        city: "São Paulo",
+        league: "Campeonato Brasileiro",
+        aliases: ["corinthians", "timao", "sccp", "sport club corinthians paulista"],
+        search: ["Corinthians", "Sport Club Corinthians Paulista"]
+      },
+      {
+        name: "São Paulo",
+        country: "Brasil",
+        city: "São Paulo",
+        league: "Campeonato Brasileiro",
+        aliases: ["sao paulo", "spfc", "tricolor", "sao paulo fc"],
+        search: ["São Paulo", "São Paulo FC"]
+      },
+      {
+        name: "Santos",
+        country: "Brasil",
+        city: "Santos",
+        league: "Campeonato Brasileiro",
+        aliases: ["santos", "peixe", "santos fc"],
+        search: ["Santos", "Santos FC"]
+      },
+      {
+        name: "Vasco da Gama",
+        country: "Brasil",
+        city: "Rio de Janeiro",
+        league: "Campeonato Brasileiro",
+        aliases: ["vasco", "vasco da gama", "gigante da colina", "crvg", "cr vasco da gama"],
+        search: ["Vasco da Gama", "CR Vasco da Gama"]
+      },
+      {
+        name: "Botafogo",
+        country: "Brasil",
+        city: "Rio de Janeiro",
+        league: "Campeonato Brasileiro",
+        aliases: ["botafogo", "fogao", "glorioso", "botafogo fr"],
+        search: ["Botafogo", "Botafogo FR"]
+      },
+      {
+        name: "Grêmio",
+        country: "Brasil",
+        city: "Porto Alegre",
+        league: "Campeonato Brasileiro",
+        aliases: ["gremio", "tricolor gaucho", "gremio fbpa"],
+        search: ["Grêmio", "Grêmio FBPA"]
+      },
+      {
+        name: "Internacional",
+        country: "Brasil",
+        city: "Porto Alegre",
+        league: "Campeonato Brasileiro",
+        aliases: ["internacional", "inter", "colorado", "sport club internacional"],
+        search: ["Internacional", "Sport Club Internacional"]
+      },
+      {
+        name: "Cruzeiro",
+        country: "Brasil",
+        city: "Belo Horizonte",
+        league: "Campeonato Brasileiro",
+        aliases: ["cruzeiro", "raposa", "cruzeiro esporte clube"],
+        search: ["Cruzeiro", "Cruzeiro Esporte Clube"]
+      },
+      {
+        name: "Atlético Mineiro",
+        country: "Brasil",
+        city: "Belo Horizonte",
+        league: "Campeonato Brasileiro",
+        aliases: ["atletico mineiro", "galo", "atletico mg", "cam"],
+        search: ["Atlético Mineiro", "Atletico MG"]
+      },
+      {
+        name: "Bahia",
+        country: "Brasil",
+        city: "Salvador",
+        league: "Campeonato Brasileiro",
+        aliases: ["bahia", "esquadrao de aço", "ec bahia", "esporte clube bahia"],
+        search: ["Bahia", "Esporte Clube Bahia"]
+      },
+      {
+        name: "Sport",
+        country: "Brasil",
+        city: "Recife",
+        league: "Campeonato Brasileiro",
+        aliases: ["sport", "sport recife", "leao", "sport club do recife"],
+        search: ["Sport", "Sport Recife"]
+      },
+      {
+        name: "Fortaleza",
+        country: "Brasil",
+        city: "Fortaleza",
+        league: "Campeonato Brasileiro",
+        aliases: ["fortaleza", "leao do pici", "fortaleza ec"],
+        search: ["Fortaleza", "Fortaleza EC"]
+      },
+      {
+        name: "Ceará",
+        country: "Brasil",
+        city: "Fortaleza",
+        league: "Campeonato Brasileiro",
+        aliases: ["ceara", "vozao", "ceara sc"],
+        search: ["Ceará", "Ceará SC"]
+      },
+      {
+        name: "Athletico Paranaense",
+        country: "Brasil",
+        city: "Curitiba",
+        league: "Campeonato Brasileiro",
+        aliases: ["athletico", "athletico paranaense", "furacao", "atletico paranaense"],
+        search: ["Athletico Paranaense", "Athletico"]
+      },
+      {
+        name: "Coritiba",
+        country: "Brasil",
+        city: "Curitiba",
+        league: "Campeonato Brasileiro",
+        aliases: ["coritiba", "coxa", "coxa branca", "coritiba fc"],
+        search: ["Coritiba", "Coritiba FC"]
+      },
+      {
+        name: "Red Bull Bragantino",
+        country: "Brasil",
+        city: "Bragança Paulista",
+        league: "Campeonato Brasileiro",
+        aliases: ["bragantino", "red bull bragantino", "rb bragantino"],
+        search: ["Red Bull Bragantino", "Bragantino"]
+      },
+      {
+        name: "Fluminense",
+        country: "Brasil",
+        city: "Rio de Janeiro",
+        league: "Campeonato Brasileiro",
+        aliases: ["fluminense", "flu", "tricolor carioca", "fluminense fc"],
+        search: ["Fluminense", "Fluminense FC"]
+      },
+      {
+        name: "Vitória",
+        country: "Brasil",
+        city: "Salvador",
+        league: "Campeonato Brasileiro",
+        aliases: ["vitoria", "leao da barra", "ec vitoria"],
+        search: ["Vitória", "EC Vitória"]
+      },
+      {
+        name: "Barcelona",
+        country: "Espanha",
+        city: "Barcelona",
+        league: "La Liga",
+        aliases: ["barcelona", "barca", "fc barcelona"],
+        search: ["Barcelona", "FC Barcelona"]
+      },
+      {
+        name: "Real Madrid",
+        country: "Espanha",
+        city: "Madrid",
+        league: "La Liga",
+        aliases: ["real madrid", "real madrid cf"],
+        search: ["Real Madrid", "Real Madrid CF"]
+      },
+      {
+        name: "Atlético de Madrid",
+        country: "Espanha",
+        city: "Madrid",
+        league: "La Liga",
+        aliases: ["atletico de madrid", "atletico madrid", "atleti"],
+        search: ["Atlético de Madrid", "Atletico Madrid"]
+      },
+      {
+        name: "Sevilla",
+        country: "Espanha",
+        city: "Sevilha",
+        league: "La Liga",
+        aliases: ["sevilla", "sevilla fc"],
+        search: ["Sevilla", "Sevilla FC"]
+      },
+      {
+        name: "Manchester United",
+        country: "Inglaterra",
+        city: "Manchester",
+        league: "Premier League",
+        aliases: ["manchester united", "man united", "man utd", "united", "red devils"],
+        search: ["Manchester United"]
+      },
+      {
+        name: "Manchester City",
+        country: "Inglaterra",
+        city: "Manchester",
+        league: "Premier League",
+        aliases: ["manchester city", "man city", "city"],
+        search: ["Manchester City"]
+      },
+      {
+        name: "Liverpool",
+        country: "Inglaterra",
+        city: "Liverpool",
+        league: "Premier League",
+        aliases: ["liverpool", "reds", "liverpool fc"],
+        search: ["Liverpool", "Liverpool FC"]
+      },
+      {
+        name: "Arsenal",
+        country: "Inglaterra",
+        city: "Londres",
+        league: "Premier League",
+        aliases: ["arsenal", "gunners", "arsenal fc"],
+        search: ["Arsenal", "Arsenal FC"]
+      },
+      {
+        name: "Chelsea",
+        country: "Inglaterra",
+        city: "Londres",
+        league: "Premier League",
+        aliases: ["chelsea", "blues", "chelsea fc"],
+        search: ["Chelsea", "Chelsea FC"]
+      },
+      {
+        name: "Tottenham",
+        country: "Inglaterra",
+        city: "Londres",
+        league: "Premier League",
+        aliases: ["tottenham", "tottenham hotspur", "spurs"],
+        search: ["Tottenham", "Tottenham Hotspur"]
+      },
+      {
+        name: "Juventus",
+        country: "Itália",
+        city: "Turim",
+        league: "Serie A",
+        aliases: ["juventus", "juve", "juventus fc"],
+        search: ["Juventus", "Juventus FC"]
+      },
+      {
+        name: "Milan",
+        country: "Itália",
+        city: "Milão",
+        league: "Serie A",
+        aliases: ["milan", "ac milan", "ac milao", "rossoneri"],
+        search: ["Milan", "AC Milan"]
+      },
+      {
+        name: "Inter de Milão",
+        country: "Itália",
+        city: "Milão",
+        league: "Serie A",
+        aliases: ["inter de milao", "inter milan", "internazionale", "inter"],
+        search: ["Inter Milan", "Internazionale"]
+      },
+      {
+        name: "Roma",
+        country: "Itália",
+        city: "Roma",
+        league: "Serie A",
+        aliases: ["roma", "as roma"],
+        search: ["Roma", "AS Roma"]
+      },
+      {
+        name: "Napoli",
+        country: "Itália",
+        city: "Nápoles",
+        league: "Serie A",
+        aliases: ["napoli", "napoles", "ssc napoli"],
+        search: ["Napoli", "SSC Napoli"]
+      },
+      {
+        name: "Bayern de Munique",
+        country: "Alemanha",
+        city: "Munique",
+        league: "Bundesliga",
+        aliases: ["bayern", "bayern munich", "bayern de munique", "fc bayern", "bayern munchen"],
+        search: ["Bayern Munich", "Bayern München"]
+      },
+      {
+        name: "Borussia Dortmund",
+        country: "Alemanha",
+        city: "Dortmund",
+        league: "Bundesliga",
+        aliases: ["borussia dortmund", "dortmund", "bvb"],
+        search: ["Borussia Dortmund"]
+      },
+      {
+        name: "RB Leipzig",
+        country: "Alemanha",
+        city: "Leipzig",
+        league: "Bundesliga",
+        aliases: ["rb leipzig", "leipzig"],
+        search: ["RB Leipzig"]
+      },
+      {
+        name: "PSG",
+        country: "França",
+        city: "Paris",
+        league: "Ligue 1",
+        aliases: ["psg", "paris saint germain", "paris sg"],
+        search: ["Paris Saint-Germain", "PSG"]
+      },
+      {
+        name: "Olympique de Marseille",
+        country: "França",
+        city: "Marselha",
+        league: "Ligue 1",
+        aliases: ["marseille", "olympique de marseille", "om"],
+        search: ["Marseille", "Olympique de Marseille"]
+      },
+      {
+        name: "Lyon",
+        country: "França",
+        city: "Lyon",
+        league: "Ligue 1",
+        aliases: ["lyon", "olympique lyonnais", "ol"],
+        search: ["Lyon", "Olympique Lyonnais"]
+      },
+      {
+        name: "Ajax",
+        country: "Holanda",
+        city: "Amsterdã",
+        league: "Eredivisie",
+        aliases: ["ajax", "ajax amsterdam"],
+        search: ["Ajax", "Ajax Amsterdam"]
+      },
+      {
+        name: "PSV",
+        country: "Holanda",
+        city: "Eindhoven",
+        league: "Eredivisie",
+        aliases: ["psv", "psv eindhoven"],
+        search: ["PSV", "PSV Eindhoven"]
+      },
+      {
+        name: "Benfica",
+        country: "Portugal",
+        city: "Lisboa",
+        league: "Primeira Liga",
+        aliases: ["benfica", "sl benfica", "encarnados"],
+        search: ["Benfica", "SL Benfica"]
+      },
+      {
+        name: "Porto",
+        country: "Portugal",
+        city: "Porto",
+        league: "Primeira Liga",
+        aliases: ["porto", "fc porto", "dragoes"],
+        search: ["Porto", "FC Porto"]
+      },
+      {
+        name: "Sporting",
+        country: "Portugal",
+        city: "Lisboa",
+        league: "Primeira Liga",
+        aliases: ["sporting", "sporting cp", "sporting lisboa", "leoes"],
+        search: ["Sporting CP", "Sporting Lisbon"]
+      },
+      {
+        name: "River Plate",
+        country: "Argentina",
+        city: "Buenos Aires",
+        league: "Liga Argentina",
+        aliases: ["river plate", "river", "millonarios"],
+        search: ["River Plate"]
+      },
+      {
+        name: "Boca Juniors",
+        country: "Argentina",
+        city: "Buenos Aires",
+        league: "Liga Argentina",
+        aliases: ["boca juniors", "boca", "xeneize", "xeneizes"],
+        search: ["Boca Juniors"]
+      },
+      {
+        name: "Racing Club",
+        country: "Argentina",
+        city: "Avellaneda",
+        league: "Liga Argentina",
+        aliases: ["racing", "racing club", "la academia"],
+        search: ["Racing Club"]
+      },
+      {
+        name: "Peñarol",
+        country: "Uruguai",
+        city: "Montevidéu",
+        league: "Liga Uruguaia",
+        aliases: ["penarol", "manya"],
+        search: ["Peñarol"]
+      },
+      {
+        name: "Nacional",
+        country: "Uruguai",
+        city: "Montevidéu",
+        league: "Liga Uruguaia",
+        aliases: ["nacional", "nacional uruguay", "nacional montevideo", "bolso"],
+        search: ["Nacional", "Nacional Montevideo"]
+      },
+      {
+        name: "América do México",
+        country: "México",
+        city: "Cidade do México",
+        league: "Liga MX",
+        aliases: ["america", "america do mexico", "club america"],
+        search: ["Club América", "America"]
+      },
+      {
+        name: "Al Ahly",
+        country: "Egito",
+        city: "Cairo",
+        league: "Liga Egípcia",
+        aliases: ["al ahly", "ahly", "al ahli"],
+        search: ["Al Ahly"]
+      },
+      {
+        name: "Al Hilal",
+        country: "Arábia Saudita",
+        city: "Riad",
+        league: "Saudi Pro League",
+        aliases: ["al hilal", "hilal"],
+        search: ["Al Hilal"]
+      },
+      {
+        name: "Al Nassr",
+        country: "Arábia Saudita",
+        city: "Riad",
+        league: "Saudi Pro League",
+        aliases: ["al nassr", "nassr"],
+        search: ["Al Nassr"]
+      },
+      {
+        name: "Urawa Red Diamonds",
+        country: "Japão",
+        city: "Saitama",
+        league: "J1 League",
+        aliases: ["urawa red diamonds", "urawa"],
+        search: ["Urawa Red Diamonds"]
+      }
+    ];
+
+    const difficultyNames = {
+      easy: "Fácil",
+      medium: "Médio",
+      hard: "Difícil"
+    };
+
+    const elements = {
+      startScreen: document.getElementById("startScreen"),
+      gameScreen: document.getElementById("gameScreen"),
+      startBtn: document.getElementById("startBtn"),
+      roundNumber: document.getElementById("roundNumber"),
+      totalRounds: document.getElementById("totalRounds"),
+      score: document.getElementById("score"),
+      progressBar: document.getElementById("progressBar"),
+      difficulty: document.getElementById("difficulty"),
+      shield: document.getElementById("shield"),
+      shieldLoading: document.getElementById("shieldLoading"),
+      clubName: document.getElementById("clubName"),
+      hintBox: document.getElementById("hintBox"),
+      answer: document.getElementById("answer"),
+      submitBtn: document.getElementById("submitBtn"),
+      hintBtn: document.getElementById("hintBtn"),
+      revealBtn: document.getElementById("revealBtn"),
+      feedback: document.getElementById("feedback"),
+      dot1: document.getElementById("dot1"),
+      dot2: document.getElementById("dot2"),
+      dot3: document.getElementById("dot3"),
+      resultOverlay: document.getElementById("resultOverlay"),
+      resultIcon: document.getElementById("resultIcon"),
+      resultTitle: document.getElementById("resultTitle"),
+      resultMessage: document.getElementById("resultMessage"),
+      finalScore: document.getElementById("finalScore"),
+      restartBtn: document.getElementById("restartBtn"),
+      homeBtn: document.getElementById("homeBtn")
+    };
+
+    let sequence = [];
+    let currentIndex = 0;
+    let currentClub = null;
+    let attemptsUsed = 0;
+    let hintsUsed = 0;
+    let score = 0;
+    let locked = false;
+    let roundToken = 0;
+    let shieldCache = new Map();
+
+    function normalize(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    const EASY_CLUBS = new Set([
+      "flamengo", "palmeiras", "corinthians", "sao paulo", "santos",
+      "vasco da gama", "botafogo", "gremio", "internacional", "cruzeiro",
+      "atletico mineiro", "bahia", "fluminense", "barcelona", "real madrid",
+      "manchester united", "manchester city", "liverpool", "arsenal",
+      "chelsea", "juventus", "milan", "inter de milao", "bayern de munique",
+      "borussia dortmund", "psg", "benfica", "porto", "river plate",
+      "boca juniors"
+    ]);
+
+    const MEDIUM_CLUBS = new Set([
+      "sport", "fortaleza", "ceara", "athletico paranaense", "coritiba",
+      "red bull bragantino", "vitoria", "atletico de madrid", "sevilla",
+      "tottenham", "roma", "napoli", "rb leipzig", "olympique de marseille",
+      "lyon", "ajax", "psv", "sporting", "racing club", "penarol",
+      "nacional", "america do mexico", "al ahly", "al hilal", "al nassr"
+    ]);
+
+    function getDifficulty(index) {
+      const clubName = normalize(sequence[index]?.name);
+
+      if (EASY_CLUBS.has(clubName)) return "easy";
+      if (MEDIUM_CLUBS.has(clubName)) return "medium";
+      return "hard";
+    }
+
+    function setFeedback(message = "", type = "") {
+      elements.feedback.textContent = message;
+      elements.feedback.className = "feedback";
+
+      if (type) {
+        elements.feedback.classList.add(type);
+      }
+    }
+
+    function setShieldSource(url) {
+      elements.shield.onerror = () => {
+        elements.shield.onerror = null;
+        elements.shield.src = FALLBACK_SHIELD;
+        elements.shieldLoading.textContent = "";
+        elements.shieldLoading.style.display = "none";
+        elements.shield.style.display = "block";
+      };
+
+      elements.shield.onload = () => {
+        elements.shieldLoading.style.display = "none";
+        elements.shield.style.display = "block";
+      };
+
+      elements.shield.src = url || FALLBACK_SHIELD;
+      elements.shield.style.display = "block";
+    }
+
+    async function requestShield(teamName) {
+      if (shieldCache.has(teamName)) {
+        return shieldCache.get(teamName);
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const response = await fetch(
+          API_URL + encodeURIComponent(teamName),
+          {
+            signal: controller.signal,
+            cache: "no-store"
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Falha na API");
+        }
+
+        const data = await response.json();
+        const teams = Array.isArray(data.teams) ? data.teams : [];
+
+        if (!teams.length) {
+          shieldCache.set(teamName, null);
+          return null;
+        }
+
+        const preferred = teams.find(team => {
+          const teamNameNormalized = normalize(team.strTeam);
+          const searchedName = normalize(teamName);
+
+          return (
+            teamNameNormalized === searchedName ||
+            teamNameNormalized.includes(searchedName) ||
+            searchedName.includes(teamNameNormalized)
+          );
+        }) || teams[0];
+
+        const url =
+          preferred.strTeamBadge ||
+          preferred.strBadge ||
+          preferred.strLogo ||
+          null;
+
+        if (url && /^https?:\/\//i.test(url)) {
+          shieldCache.set(teamName, url);
+          return url;
+        }
+
+        shieldCache.set(teamName, null);
+        return null;
+      } catch (error) {
+        shieldCache.set(teamName, null);
+        return null;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    async function getShieldUrl(club) {
+      for (const searchName of club.search || [club.name]) {
+        const url = await requestShield(searchName);
+
+        if (url) {
+          return url;
+        }
+      }
+
+      return null;
+    }
+
+    function updateProgress() {
+      const percentage = Math.round(
+        (currentIndex / sequence.length) * 100
+      );
+
+      elements.progressBar.style.width = `${percentage}%`;
+    }
+
+    function updateDifficulty() {
+      const difficulty = getDifficulty(currentIndex);
+      elements.difficulty.textContent = difficultyNames[difficulty];
+    }
+
+    function updateAttempts() {
+      const dots = [
+        elements.dot1,
+        elements.dot2,
+        elements.dot3
+      ];
+
+      dots.forEach((dot, index) => {
+        dot.classList.remove("used", "available");
+
+        if (index < attemptsUsed) {
+          dot.classList.add("used");
+        } else {
+          dot.classList.add("available");
+        }
+      });
+    }
+
+    function updateControls() {
+      const disabled = locked;
+
+      elements.answer.disabled = disabled;
+      elements.submitBtn.disabled = disabled;
+      elements.hintBtn.disabled = disabled || hintsUsed >= 2;
+      elements.revealBtn.disabled = disabled;
+    }
+
+    async function loadRound() {
+      locked = false;
+      attemptsUsed = 0;
+      hintsUsed = 0;
+      currentClub = sequence[currentIndex];
+
+      const token = ++roundToken;
+
+      elements.roundNumber.textContent = currentIndex + 1;
+      elements.totalRounds.textContent = sequence.length;
+      elements.score.textContent = score;
+      elements.clubName.textContent = "Qual é o clube?";
+      elements.hintBox.textContent =
+        "Digite o nome do clube para tentar acertar.";
+      elements.answer.value = "";
+      elements.answer.focus();
+      setFeedback("");
+      updateProgress();
+      updateDifficulty();
+      updateAttempts();
+      updateControls();
+
+      elements.shield.classList.remove("revealed");
+      elements.shieldLoading.textContent = "Carregando escudo...";
+      elements.shieldLoading.style.display = "none";
+
+      // O fallback fica visível imediatamente.
+      setShieldSource(FALLBACK_SHIELD);
+
+      const shieldUrl = await getShieldUrl(currentClub);
+
+      // Impede que uma requisição antiga altere uma rodada nova.
+      if (token !== roundToken || !currentClub) {
+        return;
+      }
+
+      if (shieldUrl) {
+        setShieldSource(shieldUrl);
+      } else {
+        elements.shieldLoading.textContent =
+          "Escudo em modo reserva";
+        elements.shieldLoading.style.display = "block";
+      }
+    }
+
+    function getHintText() {
+      const hints = [
+        `País: ${currentClub.country}`,
+        `Cidade: ${currentClub.city}`,
+        `Competição: ${currentClub.league}`
+      ];
+
+      return hints[hintsUsed];
+    }
+
+    function checkAnswer() {
+      if (locked || !currentClub) {
+        return;
+      }
+
+      const typed = normalize(elements.answer.value);
+
+      if (!typed) {
+        setFeedback("Digite uma resposta antes de enviar.", "error");
+        return;
+      }
+
+      const validAnswers = [
+        currentClub.name,
+        ...(currentClub.aliases || [])
+      ].map(normalize);
+
+      // O acerto só acontece quando a resposta corresponde exatamente
+      // ao nome do clube ou a um apelido válido (sem aceitar apenas partes).
+      const correct = validAnswers.includes(typed);
+
+      if (correct) {
+        const basePoints = [100, 70, 40][attemptsUsed] || 20;
+        const penalty = hintsUsed * 15;
+        const earned = Math.max(10, basePoints - penalty);
+
+        score += earned;
+        elements.score.textContent = score;
+        elements.clubName.textContent = currentClub.name;
+        elements.shield.classList.add("revealed");
+        setFeedback(`Acertou! Você ganhou ${earned} pontos.`, "success");
+
+        finishRound(true);
+        return;
+      }
+
+      attemptsUsed++;
+      updateAttempts();
+
+      if (attemptsUsed >= 3) {
+        elements.clubName.textContent = currentClub.name;
+        elements.shield.classList.add("revealed");
+        setFeedback("", "");
+
+        showDefeatScreen();
+        return;
+      }
+
+      elements.answer.value = "";
+      elements.answer.focus();
+
+      const remaining = 3 - attemptsUsed;
+      setFeedback(
+        `Resposta errada. Você ainda tem ${remaining} tentativa${remaining === 1 ? "" : "s"}.`,
+        "error"
+      );
+    }
+
+    function giveHint() {
+      if (locked || !currentClub) {
+        return;
+      }
+
+      if (hintsUsed >= 2) {
+        setFeedback("Você já usou o limite de dicas nesta rodada.", "error");
+        return;
+      }
+
+      hintsUsed++;
+      elements.hintBox.textContent = getHintText();
+      elements.hintBtn.textContent = `💡 Usar dica (${2 - hintsUsed} restante${2 - hintsUsed === 1 ? "" : "s"})`;
+      updateControls();
+
+      setFeedback("Dica revelada. Ela reduz sua pontuação.", "success");
+    }
+
+    function revealClub() {
+      if (locked || !currentClub) {
+        return;
+      }
+
+      elements.clubName.textContent = currentClub.name;
+      elements.shield.classList.add("revealed");
+      setFeedback(`O clube era ${currentClub.name}.`, "error");
+
+      finishRound(false);
+    }
+
+    function showDefeatScreen() {
+      locked = true;
+      updateControls();
+
+      elements.resultIcon.textContent = "💔";
+      elements.resultTitle.textContent = "Você perdeu!";
+      elements.resultMessage.textContent =
+        `Você errou as três tentativas. O clube era ${currentClub.name}.`;
+      elements.finalScore.textContent = `${score} pontos`;
+      elements.resultOverlay.hidden = false;
+    }
+
+    function finishRound(won) {
+      locked = true;
+      updateControls();
+
+      setTimeout(() => {
+        if (currentIndex < sequence.length - 1) {
+          currentIndex++;
+          loadRound();
+        } else {
+          showFinalResult();
+        }
+      }, won ? 1200 : 1800);
+    }
+
+    function showFinalResult() {
+      locked = true;
+      elements.progressBar.style.width = "100%";
+
+      elements.resultOverlay.hidden = false;
+      elements.finalScore.textContent = `${score} pontos`;
+
+      if (score >= sequence.length * 75) {
+        elements.resultIcon.textContent = "🏆";
+        elements.resultTitle.textContent = "Você é especialista!";
+        elements.resultMessage.textContent =
+          "Seu conhecimento de futebol está em outro nível.";
+      } else if (score >= sequence.length * 45) {
+        elements.resultIcon.textContent = "👏";
+        elements.resultTitle.textContent = "Mandou bem!";
+        elements.resultMessage.textContent =
+          "Você reconheceu muitos escudos e foi muito bem no desafio.";
+      } else {
+        elements.resultIcon.textContent = "⚽";
+        elements.resultTitle.textContent = "Bom jogo!";
+        elements.resultMessage.textContent =
+          "Continue treinando e tente melhorar sua pontuação na próxima partida.";
+      }
+    }
+
+    function startGame() {
+      elements.startScreen.hidden = true;
+      elements.gameScreen.hidden = false;
+      restartGame();
+    }
+
+    function restartGame() {
+      roundToken++;
+
+      // Embaralha dentro de cada dificuldade, mantendo:
+      // Fácil -> Médio -> Difícil.
+      const easyClubs = shuffle(
+        clubs.filter(club => EASY_CLUBS.has(normalize(club.name)))
+      );
+
+      const mediumClubs = shuffle(
+        clubs.filter(club => MEDIUM_CLUBS.has(normalize(club.name)))
+      );
+
+      const hardClubs = shuffle(
+        clubs.filter(club =>
+          !EASY_CLUBS.has(normalize(club.name)) &&
+          !MEDIUM_CLUBS.has(normalize(club.name))
+        )
+      );
+
+      sequence = [...easyClubs, ...mediumClubs, ...hardClubs];
+
+      currentIndex = 0;
+      currentClub = null;
+      attemptsUsed = 0;
+      hintsUsed = 0;
+      score = 0;
+      locked = false;
+
+      elements.resultOverlay.hidden = true;
+      elements.score.textContent = "0";
+      elements.progressBar.style.width = "0%";
+
+      loadRound();
+    }
+
+    function goHome() {
+      roundToken++;
+      locked = true;
+      elements.resultOverlay.hidden = true;
+      elements.gameScreen.hidden = true;
+      elements.startScreen.hidden = false;
+    }
+
+    elements.startBtn.addEventListener("click", startGame);
+    elements.restartBtn.addEventListener("click", restartGame);
+    elements.homeBtn.addEventListener("click", goHome);
+    elements.submitBtn.addEventListener("click", checkAnswer);
+    elements.hintBtn.addEventListener("click", giveHint);
+    elements.revealBtn.addEventListener("click", revealClub);
+
+    elements.answer.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        checkAnswer();
+      }
+    });
+
+    // Estado inicial seguro.
+    elements.gameScreen.hidden = true;
+    elements.resultOverlay.hidden = true;
+    setShieldSource(FALLBACK_SHIELD);
+  </script>
+</body>
+</html>
