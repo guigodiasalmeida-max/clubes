@@ -2116,7 +2116,9 @@ return;
    elements.startBtn.addEventListener("click", startGame);
 elements.restartBtn.addEventListener("click", restartGame);
 elements.homeBtn.addEventListener("click", goHome);
-elements.submitBtn.addEventListener("click", checkAnswer);
+elements.submitBtn.addEventListener("click", () => {
+  checkAnswer();
+});
 elements.hintBtn.addEventListener("click", () => {
       if (gameMode === "players") {
         if (typeof window.givePlayerHint === "function") window.givePlayerHint();
