@@ -9,6 +9,8 @@
  
     <link rel="stylesheet" href="style.css">
 
+<style>
+.mode-selector{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}.mode-btn{flex:1;min-width:140px;padding:12px 16px;border:1px solid #2b4938;border-radius:12px;background:#10251a;color:#dceee2;font-weight:700;cursor:pointer}.mode-btn.active{background:#d8b45f;color:#081a10;border-color:#d8b45f}.shield-box img{object-fit:contain}.player-image{border-radius:18px;filter:none!important;transform:none!important;opacity:1!important}.shield-box img,.shield-box img.revealed{filter:none!important;transform:none!important;opacity:1!important}</style>
 </head>
 
 <body>
@@ -37,7 +39,11 @@
 
     <main id="startScreen" class="card start-card">
       <h2>⚽ Como funciona o jogo?</h2>
-      <p>Descubra o clube pelo escudo. Você terá <strong>3 tentativas</strong> em cada rodada.</p>
+      <div class="mode-selector" role="group" aria-label="Escolha o modo de jogo">
+        <button id="clubModeBtn" class="mode-btn active" type="button">🏟️ Clubes</button>
+        <button id="playerModeBtn" class="mode-btn" type="button">👤 Jogadores</button>
+      </div>
+      <p>Descubra o clube pelo escudo ou o jogador pela foto. Você terá <strong>3 tentativas</strong> em cada rodada.</p>
 
       <div class="rules">
         <div class="rule">
@@ -78,8 +84,8 @@
       <div id="difficulty" class="difficulty">Fácil</div>
 
       <div class="shield-box">
-        <img id="shield" alt="Escudo do clube" />
-        <div id="shieldLoading" class="shield-loading">Carregando escudo...</div>
+        <img id="shield" alt="Imagem do desafio" />
+        <div id="shieldLoading" class="shield-loading">Carregando imagem...</div>
       </div>
 
       <h2 id="clubName" class="club-name">Qual é o clube?</h2>
@@ -93,7 +99,7 @@
           id="answer"
           type="text"
           autocomplete="off"
-          placeholder="Digite o nome do clube..."
+          placeholder="Digite o nome..."
           maxlength="60"
         />
 
@@ -1045,7 +1051,512 @@
       }
     ];
 
-    const difficultyNames = {
+ const players = [
+  {
+    name: 'Neymar',
+    aliases: ['neymar', 'neymar junior', 'neymar jr', 'ney'],
+    difficulty: 'easy',
+    search: [
+      'Neymar Jr footballer Brazil portrait',
+      'Neymar Santos Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Vinicius Junior',
+    aliases: ['vinicius junior', 'vini junior', 'vini jr', 'vini', 'vinicius'],
+    difficulty: 'easy',
+    search: [
+      'Vinicius Junior Real Madrid footballer portrait',
+      'Vini Jr Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Lionel Messi',
+    aliases: ['lionel messi', 'messi', 'leo messi', 'et'],
+    difficulty: 'easy',
+    search: [
+      'Lionel Messi footballer Argentina portrait',
+      'Lionel Messi Inter Miami football player headshot'
+    ]
+  },
+
+  {
+    name: 'Cristiano Ronaldo',
+    aliases: ['cristiano ronaldo', 'cristiano', 'ronaldo', 'cr7', 'papai'],
+    difficulty: 'easy',
+    search: [
+      'Cristiano Ronaldo footballer Portugal portrait',
+      'Cristiano Ronaldo Al Nassr football player headshot'
+    ]
+  },
+
+  {
+    name: 'Kylian Mbappe',
+    aliases: ['kylian mbappe', 'mbappe', 'mbappe jr'],
+    difficulty: 'easy',
+    search: [
+      'Kylian Mbappe Real Madrid footballer portrait',
+      'Kylian Mbappe France football player headshot'
+    ]
+  },
+
+  {
+    name: 'Erling Haaland',
+    aliases: ['erling haaland', 'haaland', 'erling'],
+    difficulty: 'easy',
+    search: [
+      'Erling Haaland Manchester City footballer portrait',
+      'Erling Haaland Norway football player headshot'
+    ]
+  },
+
+  {
+    name: 'Jude Bellingham',
+    aliases: ['jude bellingham', 'bellingham', 'jude'],
+    difficulty: 'easy',
+    search: [
+      'Jude Bellingham Real Madrid footballer portrait',
+      'Jude Bellingham England football player headshot'
+    ]
+  },
+
+  {
+    name: 'Rodri',
+    aliases: ['rodri', 'rodrigo hernandez'],
+    difficulty: 'medium',
+    search: [
+      'Rodri Manchester City footballer portrait',
+      'Rodri Spain football player headshot'
+    ]
+  },
+
+  {
+    name: 'Kevin De Bruyne',
+    aliases: ['kevin de bruyne', 'de bruyne', 'kevin'],
+    difficulty: 'easy',
+    search: [
+      'Kevin De Bruyne Manchester City footballer portrait',
+      'Kevin De Bruyne Belgium football player headshot'
+    ]
+  },
+
+  {
+    name: 'Mohamed Salah',
+    aliases: ['mohamed salah', 'salah', 'mo salah', 'mohamed'],
+    difficulty: 'easy',
+    search: [
+      'Mohamed Salah Liverpool footballer portrait',
+      'Mohamed Salah Egypt football player headshot'
+    ]
+  },
+
+  {
+    name: 'Harry Kane',
+    aliases: ['harry kane', 'kane'],
+    difficulty: 'easy',
+    search: [
+      'Harry Kane Bayern Munich footballer portrait',
+      'Harry Kane England football player headshot'
+    ]
+  },
+
+  {
+    name: 'Robert Lewandowski',
+    aliases: ['robert lewandowski', 'lewandowski', 'lewa'],
+    difficulty: 'easy',
+    search: [
+      'Robert Lewandowski Barcelona footballer portrait',
+      'Robert Lewandowski Poland football player headshot'
+    ]
+  },
+
+  {
+    name: 'Lamine Yamal',
+    aliases: ['lamine yamal', 'yamal', 'lamine'],
+    difficulty: 'easy',
+    search: [
+      'Lamine Yamal Barcelona footballer portrait',
+      'Lamine Yamal Spain football player headshot'
+    ]
+  },
+
+  {
+    name: 'Raphinha',
+    aliases: ['raphinha', 'raphael'],
+    difficulty: 'easy',
+    search: [
+      'Raphinha Barcelona footballer portrait',
+      'Raphinha Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Ronaldo Nazario',
+    aliases: ['ronaldo nazario', 'ronaldo fenomeno', 'fenomeno', 'r9', 'ronaldo'],
+    difficulty: 'easy',
+    search: [
+      'Ronaldo Nazario Brazil footballer portrait',
+      'Ronaldo Fenomeno football player headshot'
+    ]
+  },
+
+  {
+    name: 'Ronaldinho',
+    aliases: ['ronaldinho', 'ronaldinho gaucho', 'dinho'],
+    difficulty: 'easy',
+    search: [
+      'Ronaldinho Gaucho Brazil footballer portrait',
+      'Ronaldinho Barcelona football player headshot'
+    ]
+  },
+
+  {
+    name: 'Kaka',
+    aliases: ['kaka', 'ricardo kaka', 'ricardo'],
+    difficulty: 'easy',
+    search: [
+      'Kaka Brazil footballer portrait',
+      'Kaka AC Milan football player headshot'
+    ]
+  },
+
+  {
+    name: 'Rivaldo',
+    aliases: ['rivaldo', 'rivaldo vitor'],
+    difficulty: 'easy',
+    search: [
+      'Rivaldo Brazil footballer portrait',
+      'Rivaldo Barcelona football player headshot'
+    ]
+  },
+
+  {
+    name: 'Romario',
+    aliases: ['romario', 'romario baixinho', 'baixinho'],
+    difficulty: 'easy',
+    search: [
+      'Romario Brazil footballer portrait',
+      'Romario Barcelona football player headshot'
+    ]
+  },
+
+  {
+    name: 'Adriano',
+    aliases: ['adriano', 'adriano imperador', 'imperador'],
+    difficulty: 'easy',
+    search: [
+      'Adriano Imperador Brazil footballer portrait',
+      'Adriano Inter Milan football player headshot'
+    ]
+  },
+
+  {
+    name: 'Gabriel Martinelli',
+    aliases: ['gabriel martinelli', 'martinelli'],
+    difficulty: 'easy',
+    search: [
+      'Gabriel Martinelli Arsenal footballer portrait',
+      'Gabriel Martinelli Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Gabriel Jesus',
+    aliases: ['gabriel jesus', 'gabriel jesus'],
+    difficulty: 'easy',
+    search: [
+      'Gabriel Jesus Arsenal footballer portrait',
+      'Gabriel Jesus Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Bruno Guimaraes',
+    aliases: ['bruno guimaraes', 'bruno guimaraes', 'guimaraes'],
+    difficulty: 'medium',
+    search: [
+      'Bruno Guimaraes Newcastle footballer portrait',
+      'Bruno Guimaraes Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Casemiro',
+    aliases: ['casemiro'],
+    difficulty: 'easy',
+    search: [
+      'Casemiro Manchester United footballer portrait',
+      'Casemiro Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Alisson',
+    aliases: ['alisson', 'alisson becker'],
+    difficulty: 'easy',
+    search: [
+      'Alisson Becker Liverpool goalkeeper portrait',
+      'Alisson Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Ederson',
+    aliases: ['ederson', 'ederson moraes'],
+    difficulty: 'easy',
+    search: [
+      'Ederson Manchester City goalkeeper portrait',
+      'Ederson Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Marquinhos',
+    aliases: ['marquinhos', 'marcos aoas correa'],
+    difficulty: 'easy',
+    search: [
+      'Marquinhos PSG footballer portrait',
+      'Marquinhos Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Thiago Silva',
+    aliases: ['thiago silva', 'monstro', 'thiago'],
+    difficulty: 'easy',
+    search: [
+      'Thiago Silva Brazil footballer portrait',
+      'Thiago Silva Chelsea football player headshot'
+    ]
+  },
+
+  {
+    name: 'Endrick',
+    aliases: ['endrick', 'endrick felipe'],
+    difficulty: 'easy',
+    search: [
+      'Endrick Real Madrid footballer portrait',
+      'Endrick Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Rodrygo',
+    aliases: ['rodrygo', 'rodrygo goes', 'raio'],
+    difficulty: 'easy',
+    search: [
+      'Rodrygo Real Madrid footballer portrait',
+      'Rodrygo Brazil football player headshot'
+    ]
+  },
+
+  {
+    name: 'Phil Foden',
+    aliases: ['phil foden', 'foden'],
+    difficulty: 'easy',
+    search: [
+      'Phil Foden Manchester City footballer portrait',
+      'Phil Foden England football player headshot'
+    ]
+  },
+
+  {
+    name: 'Bukayo Saka',
+    aliases: ['bukayo saka', 'saka'],
+    difficulty: 'easy',
+    search: [
+      'Bukayo Saka Arsenal footballer portrait',
+      'Bukayo Saka England football player headshot'
+    ]
+  },
+
+  {
+    name: 'Son Heung-min',
+    aliases: ['son heung-min', 'son heung min', 'son', 'heung min son'],
+    difficulty: 'easy',
+    search: [
+      'Son Heung-min Tottenham footballer portrait',
+      'Son Heung-min South Korea football player headshot'
+    ]
+  },
+
+  {
+    name: 'Sadio Mane',
+    aliases: ['sadio mane', 'mane'],
+    difficulty: 'easy',
+    search: [
+      'Sadio Mane Senegal footballer portrait',
+      'Sadio Mane Liverpool football player headshot'
+    ]
+  },
+
+  {
+    name: 'Virgil van Dijk',
+    aliases: ['virgil van dijk', 'van dijk'],
+    difficulty: 'easy',
+    search: [
+      'Virgil van Dijk Liverpool footballer portrait',
+      'Virgil van Dijk Netherlands football player headshot'
+    ]
+  },
+
+  {
+    name: 'Trent Alexander-Arnold',
+    aliases: ['trent alexander-arnold', 'trent alexander arnold', 'trent', 'arnold'],
+    difficulty: 'medium',
+    search: [
+      'Trent Alexander-Arnold Liverpool footballer portrait',
+      'Trent Alexander-Arnold England football player headshot'
+    ]
+  },
+
+  {
+    name: 'Antoine Griezmann',
+    aliases: ['antoine griezmann', 'griezmann', 'antoine'],
+    difficulty: 'easy',
+    search: [
+      'Antoine Griezmann Atletico Madrid footballer portrait',
+      'Antoine Griezmann France football player headshot'
+    ]
+  },
+
+  {
+    name: 'Ousmane Dembele',
+    aliases: ['ousmane dembele', 'dembele', 'ousmane'],
+    difficulty: 'medium',
+    search: [
+      'Ousmane Dembele PSG footballer portrait',
+      'Ousmane Dembele France football player headshot'
+    ]
+  },
+
+  {
+    name: 'Pedri',
+    aliases: ['pedri', 'pedro gonzalez'],
+    difficulty: 'easy',
+    search: [
+      'Pedri Barcelona footballer portrait',
+      'Pedri Spain football player headshot'
+    ]
+  },
+
+  {
+    name: 'Gavi',
+    aliases: ['gavi', 'pablo gavi'],
+    difficulty: 'easy',
+    search: [
+      'Gavi Barcelona footballer portrait',
+      'Gavi Spain football player headshot'
+    ]
+  },
+
+  {
+    name: 'Luka Modric',
+    aliases: ['luka modric', 'modric', 'luka'],
+    difficulty: 'easy',
+    search: [
+      'Luka Modric Real Madrid footballer portrait',
+      'Luka Modric Croatia football player headshot'
+    ]
+  },
+
+  {
+    name: 'Toni Kroos',
+    aliases: ['toni kroos', 'toni', 'kroos'],
+    difficulty: 'easy',
+    search: [
+      'Toni Kroos Real Madrid footballer portrait',
+      'Toni Kroos Germany football player headshot'
+    ]
+  },
+
+  {
+    name: 'Vincent Kompany',
+    aliases: ['vincent kompany', 'kompany'],
+    difficulty: 'medium',
+    search: [
+      'Vincent Kompany Belgium footballer portrait',
+      'Vincent Kompany Manchester City football player headshot'
+    ]
+  },
+
+  {
+    name: 'Zlatan Ibrahimovic',
+    aliases: ['zlatan ibrahimovic', 'zlatan', 'ibrahimovic', 'ibra'],
+    difficulty: 'easy',
+    search: [
+      'Zlatan Ibrahimovic Sweden footballer portrait',
+      'Zlatan Ibrahimovic AC Milan football player headshot'
+    ]
+  },
+
+  {
+    name: 'Luis Suarez',
+    aliases: ['luis suarez', 'suarez', 'luisito'],
+    difficulty: 'easy',
+    search: [
+      'Luis Suarez Uruguay footballer portrait',
+      'Luis Suarez Barcelona football player headshot'
+    ]
+  },
+
+  {
+    name: 'Angel Di Maria',
+    aliases: ['angel di maria', 'di maria'],
+    difficulty: 'easy',
+    search: [
+      'Angel Di Maria Argentina footballer portrait',
+      'Angel Di Maria Real Madrid football player headshot'
+    ]
+  },
+
+  {
+    name: 'Paulo Dybala',
+    aliases: ['paulo dybala', 'dybala'],
+    difficulty: 'easy',
+    search: [
+      'Paulo Dybala Roma footballer portrait',
+      'Paulo Dybala Argentina football player headshot'
+    ]
+  },
+
+  {
+    name: 'Victor Osimhen',
+    aliases: ['victor osimhen', 'osimhen'],
+    difficulty: 'medium',
+    search: [
+      'Victor Osimhen Napoli footballer portrait',
+      'Victor Osimhen Nigeria football player headshot'
+    ]
+  },
+
+  {
+    name: 'Khvicha Kvaratskhelia',
+    aliases: ['khvicha kvaratskhelia', 'kvaratskhelia', 'khvicha', 'kvara'],
+    difficulty: 'hard',
+    search: [
+      'Khvicha Kvaratskhelia PSG footballer portrait',
+      'Khvicha Kvaratskhelia Georgia football player headshot'
+    ]
+  },
+
+  {
+    name: 'Cole Palmer',
+    aliases: ['cole palmer', 'cole', 'palmer', 'gelado'],
+    difficulty: 'medium',
+    search: [
+      'Cole Palmer Chelsea footballer portrait',
+      'Cole Palmer England football player headshot'
+    ]
+  }
+];
+let gameMode = "clubs";
+let currentPlayer = null;
+let playerCache = new Map();
+
+const difficultyNames = {
       easy: "Fácil",
       medium: "Médio",
       hard: "Difícil"
@@ -1055,6 +1566,8 @@
       startScreen: document.getElementById("startScreen"),
       gameScreen: document.getElementById("gameScreen"),
       startBtn: document.getElementById("startBtn"),
+      clubModeBtn: document.getElementById("clubModeBtn"),
+      playerModeBtn: document.getElementById("playerModeBtn"),
       roundNumber: document.getElementById("roundNumber"),
       totalRounds: document.getElementById("totalRounds"),
       score: document.getElementById("score"),
@@ -1480,7 +1993,7 @@ return;
       elements.resultIcon.textContent = "💔";
       elements.resultTitle.textContent = "Você perdeu!";
       elements.resultMessage.textContent =
-        `Você errou as três tentativas. O clube era ${currentClub.name}.`;
+        `Você errou as três tentativas. ${gameMode === "players" ? "O jogador era" : "O clube era"} ${gameMode === "players" ? currentPlayer.name : currentClub.name}.`;
       elements.finalScore.textContent = `${score} pontos`;
       elements.resultOverlay.hidden = false;
     }
@@ -1515,7 +2028,7 @@ return;
         elements.resultIcon.textContent = "👏";
         elements.resultTitle.textContent = "Mandou bem!";
         elements.resultMessage.textContent =
-          "Você reconheceu muitos escudos e foi muito bem no desafio.";
+          gameMode === "players" ? "Você reconheceu muitos jogadores e foi muito bem no desafio." : "Você reconheceu muitos escudos e foi muito bem no desafio.";
       } else {
         elements.resultIcon.textContent = "⚽";
         elements.resultTitle.textContent = "Bom jogo!";
@@ -1578,7 +2091,14 @@ return;
 elements.restartBtn.addEventListener("click", restartGame);
 elements.homeBtn.addEventListener("click", goHome);
 elements.submitBtn.addEventListener("click", checkAnswer);
-elements.hintBtn.addEventListener("click", giveHint);
+elements.hintBtn.addEventListener("click", () => {
+      if (gameMode === "players") {
+        if (typeof window.givePlayerHint === "function") window.givePlayerHint();
+        else giveHint();
+      } else {
+        giveHint();
+      }
+    });
 
 elements.answer.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -1591,6 +2111,136 @@ elements.answer.addEventListener("keydown", (event) => {
     elements.gameScreen.hidden = true;
     elements.resultOverlay.hidden = true;
     setShieldSource(FALLBACK_SHIELD);
-  </script>
+  
+
+    async function requestPlayerImage(playerName) {
+      if (playerCache.has(playerName)) return playerCache.get(playerName);
+      try {
+        const response = await fetch("https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=" + encodeURIComponent(playerName), {cache:"no-store"});
+        const data = await response.json();
+        const list = Array.isArray(data.player) ? data.player : [];
+        const wanted = normalize(playerName);
+        const found = list.find(p => normalize(p.strPlayer) === wanted) || list[0];
+        const url = found && (found.strThumb || found.strCutout || found.strRender);
+        playerCache.set(playerName, url || null);
+        return url || null;
+      } catch { playerCache.set(playerName, null); return null; }
+    }
+
+    function setMode(mode) {
+      gameMode = mode;
+      elements.clubModeBtn.classList.toggle("active", mode === "clubs");
+      elements.playerModeBtn.classList.toggle("active", mode === "players");
+      elements.startScreen.querySelector("p").innerHTML = mode === "clubs"
+        ? "Descubra o clube pelo escudo. Você terá <strong>3 tentativas</strong> em cada rodada."
+        : "Descubra o jogador pela foto. Você terá <strong>3 tentativas</strong> em cada rodada.";
+      elements.clubName.textContent = mode === "clubs" ? "Qual é o clube?" : "Quem é esse jogador?";
+      elements.answer.placeholder = mode === "clubs" ? "Digite o nome do clube..." : "Digite o nome do jogador...";
+    }
+
+    const originalLoadRound = loadRound;
+    loadRound = async function() {
+      if (gameMode === "clubs") return originalLoadRound();
+      const token = ++roundToken;
+      let url = null;
+
+      // Nunca inicia uma rodada sem uma foto válida.
+      while (currentIndex < sequence.length && !url) {
+        currentPlayer = sequence[currentIndex];
+        url = await requestPlayerImage(currentPlayer.name);
+        if (!url) currentIndex++;
+      }
+
+      if (token !== roundToken) return;
+      if (!url || !currentPlayer) {
+        locked = true;
+        elements.clubName.textContent = "Não há mais jogadores com foto";
+        elements.shieldLoading.textContent = "Fim do modo jogador";
+        elements.shieldLoading.style.display = "block";
+        showFinalResult();
+        return;
+      }
+
+      locked = false; attemptsUsed = 0; hintsUsed = 0;
+      elements.roundNumber.textContent = currentIndex + 1; elements.totalRounds.textContent = sequence.length;
+      elements.score.textContent = score; elements.clubName.textContent = "Quem é esse jogador?";
+      elements.hintBox.textContent = "Digite o nome do jogador para tentar acertar.";
+      elements.answer.value = ""; setFeedback(""); updateProgress(); updateAttempts(); updateControls();
+      elements.difficulty.textContent = currentPlayer.difficulty === "hard" ? "Difícil" : currentPlayer.difficulty === "medium" ? "Médio" : "Fácil";
+      elements.shield.classList.remove("revealed"); elements.shieldLoading.style.display = "none";
+      setShieldSource(url);
+      elements.shield.alt = "Foto de " + currentPlayer.name;
+      elements.answer.focus();
+    };
+
+    const originalCheckAnswer = checkAnswer;
+    checkAnswer = function() {
+      if (gameMode === "clubs") return originalCheckAnswer();
+      if (locked || !currentPlayer) return;
+      const typed = normalize(elements.answer.value);
+      if (!typed) return setFeedback("Digite uma resposta antes de enviar.", "error");
+      const valid = [currentPlayer.name, ...(currentPlayer.aliases || [])].map(normalize);
+      if (valid.includes(typed)) {
+        playCorrectSound(); const earned = Math.max(10, [100,70,40][attemptsUsed] - hintsUsed * 15);
+        score += earned; elements.score.textContent = score; elements.clubName.textContent = currentPlayer.name;
+        elements.shield.classList.add("revealed"); setFeedback(`Acertou! Você ganhou ${earned} pontos.`, "success"); finishRound(true);
+      } else {
+        attemptsUsed++; playWrongSound(); updateAttempts();
+        if (attemptsUsed >= 3) { elements.clubName.textContent = currentPlayer.name; elements.shield.classList.add("revealed"); showDefeatScreen(); }
+        else { elements.answer.value = ""; elements.answer.focus(); setFeedback(`Resposta errada. Você ainda tem ${3-attemptsUsed} tentativa${3-attemptsUsed===1?"":"s"}.`, "error"); }
+      }
+    };
+
+    const originalGiveHint = giveHint;
+    const givePlayerHint = function() {
+      if (locked || !currentPlayer) return;
+      if (hintsUsed >= 2) {
+        setFeedback("Você já usou o limite de dicas nesta rodada.", "error");
+        return;
+      }
+      const hints = currentPlayer.hints || (() => {
+        const searchText = (currentPlayer.search || []).join(" ");
+        const generic = new Set([
+          "footballer", "football", "soccer", "player", "portrait", "headshot",
+          "photo", "photograph", "image", "face", "man", "men", "male",
+          "jersey", "kit", "standing", "closeup", "professional"
+        ]);
+        const nameWords = new Set(normalize(currentPlayer.name).split(" "));
+        const clues = searchText
+          .replace(/[^a-zA-ZÀ-ÿ0-9 ]/g, " ")
+          .split(/\s+/)
+          .filter(word => word.length > 2 && !generic.has(word.toLowerCase()) && !nameWords.has(normalize(word)))
+          .filter((word, index, arr) => arr.findIndex(item => normalize(item) === normalize(word)) === index)
+          .slice(0, 5);
+        const careerClue = clues.length
+          ? `Pista da carreira: está associado a ${clues.slice(0, 3).join(", ")}.`
+          : "Pista da carreira: é um jogador conhecido internacionalmente.";
+        return [
+          careerClue,
+          `Outra pista: o nome pelo qual ele é conhecido é ${currentPlayer.name.split(" ").length > 1 ? "composto por mais de uma palavra" : "curto e direto"}.`
+        ];
+      })();
+      hintsUsed++;
+      elements.hintBox.textContent = hints[hintsUsed - 1] || "Tente lembrar de um jogador famoso.";
+      elements.hintBtn.textContent = `💡 Usar dica (${2-hintsUsed} restante${2-hintsUsed===1?"":"s"})`;
+      updateControls();
+      setFeedback("Dica revelada. Ela reduz sua pontuação.", "success");
+    };
+
+    window.givePlayerHint = givePlayerHint;
+
+    const originalRestartGame = restartGame;
+    restartGame = function() {
+      if (gameMode === "clubs") return originalRestartGame();
+      sequence = [...players].sort((a, b) => {
+        const order = { easy: 0, medium: 1, hard: 2 };
+        return (order[a.difficulty] ?? 99) - (order[b.difficulty] ?? 99);
+      });
+      currentIndex=0; currentPlayer=null; attemptsUsed=0; hintsUsed=0; score=0; locked=false; roundToken++; elements.resultOverlay.hidden=true; elements.score.textContent="0"; elements.progressBar.style.width="0%"; loadRound();
+    };
+    elements.clubModeBtn.addEventListener("click", () => setMode("clubs"));
+    elements.playerModeBtn.addEventListener("click", () => setMode("players"));
+    setMode("clubs");
+</script>
 </body>
 </html>
